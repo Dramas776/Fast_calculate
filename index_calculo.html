@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juego de Números</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            font-size: 2em;
+        }
+        #number {
+            display: none;
+        }
+        #input-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+
+    <button id="startButton">Start</button>
+    <div id="number"></div>
+    <div id="input-container">
+        <div id="timer">Escriba la respuesta en 5 segundos:</div>
+        <input type="text" id="response" />
+        <button id="submitResponse">Enviar</button>
+    </div>
+    <div id="result" style="display: none;"></div>
+    <button id="tryAgainButton" style="display: none;">Try again</button>
+
+    <script>
+        let total = 0;
+        let count = 0;
+
+        const startButton = document.getElementById('startButton');
+        const numberDisplay = document.getElementById('number');
+        const inputContainer = document.getElementById('input-container');
+        const timerDisplay = document.getElementById('timer');
+        const resultDisplay = document.getElementById('result');
+        const tryAgainButton = document.getElementById('tryAgainButton');
+
+        startButton.addEventListener('click', startGame);
+        tryAgainButton.addEventListener('click', resetGame);
+        document.getElementById('submitResponse').addEventListener('click', checkResponse);
+
+        function startGame() {
+            total = 0;
+            count = 0;
+            startButton.style.display = 'none';
+            inputContainer.style.display = 'none';
+            resultDisplay.style.display = 'none';
+            tryAgainButton.style.display = 'none';
+            showNextNumber();
+        }
+
+        function showNextNumber() {
+            if (count < 15) {
+                const number = Math.floor(Math.random() * 9) + 1;
+                const sign = Math.random() < 0.5 ? -1 : 1;
+                const finalNumber = number * sign;
+                total += finalNumber;
+                numberDisplay.textContent = finalNumber;
+                numberDisplay.style.display = 'block';
+                setTimeout(() => {
+                    numberDisplay.style.display = 'none';
+                    count++;
+                    showNextNumber();
+                }, 1000);
+            } else {
+                showInput();
+            }
+        }
+
+        function showInput() {
+            inputContainer.style.display = 'flex';
+            let timer = 5;
+            timerDisplay.textContent = `Escriba la respuesta en ${timer} segundos:`;
+            const countdown = setInterval(() => {
+                timer--;
+                if (timer <= 0) {
+                    clearInterval(countdown);
+                    timerDisplay.textContent = "Tiempo agotado. Escriba su respuesta:";
+                } else {
+                    timerDisplay.textContent = `Escriba la respuesta en ${timer} segundos:`;
+                }
+            }, 1000);
+        }
+
+        function checkResponse() {
+            const userResponse = parseInt(document.getElementById('response').value, 10);
+            resultDisplay.textContent = `La respuesta correcta es: ${total}`;
+            resultDisplay.style.display = 'block';
+            inputContainer.style.display = 'none';
+            tryAgainButton.style.display = 'block';
+        }
+
+        function resetGame() {
+            startButton.style.display = 'block';
+            numberDisplay.style.display = 'none';
+            resultDisplay.style.display = 'none';
+            tryAgainButton.style.display = 'none';
+            document.getElementById('response').value = '';
+        }
+    </script>
+
+</body>
+</html>
